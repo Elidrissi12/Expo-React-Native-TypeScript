@@ -21,6 +21,12 @@ export default function ToolsTab() {
       </View>
 
       <View style={styles.buttonsRow}>
+        <Link href="/user-types-dashboard" asChild>
+          <Button title="Rôles / Types d’utilisateurs" onPress={() => {}} />
+        </Link>
+      </View>
+
+      <View style={styles.buttonsRow}>
         <Link href="/industrial-dashboard" asChild>
           <Button title="Dashboard (UI maquette)" onPress={() => {}} />
         </Link>

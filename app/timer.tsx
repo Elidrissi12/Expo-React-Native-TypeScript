@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
-
+import { AppHeader } from '@/components/AppHeader';
 const ONE_SECOND = 1000;
 
 export default function Timer() {
@@ -33,7 +33,12 @@ export default function Timer() {
   };
 
   return (
+    
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+      <View style={{ flex: 1 }}>
+    <AppHeader title="Dashboard opérateur" />
+    
+  </View>
       <Text style={{ fontSize: 48 }}>{seconds}s</Text>
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <Button title={isRunning ? 'Pause' : 'Start'} onPress={toggleTimer} />

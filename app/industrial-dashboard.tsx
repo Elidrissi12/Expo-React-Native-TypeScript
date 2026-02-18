@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useMemo, useState } from 'react';
+import { TaskCard } from '@/components/TaskCard';
+import { AppHeader } from '@/components/AppHeader';
 import {
   FlatList,
   ImageBackground,
@@ -109,6 +111,12 @@ export default function IndustrialDashboard() {
 
   return (
     <View style={styles.page}>
+      <View style={{ flex: 1 }}>
+    <AppHeader title="Dashboard opérateur" />
+    <View style={styles.page}>
+      {/* le contenu actuel de ta page (hero, search, listes, etc.) */}
+    </View>
+  </View>
       {/* Header */}
       <View style={styles.headerRow}>
         <View style={styles.menuButton}>
