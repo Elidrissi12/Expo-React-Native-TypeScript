@@ -40,7 +40,9 @@ function FormValidation() {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title="Submit" onPress={handleSubmit} />
+      <View style={styles.buttonContainer}>
+        <Button title="Submit" onPress={handleSubmit} />
+      </View>
     </View>
   );
 }
@@ -65,6 +67,9 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     marginBottom: 12,
+  },
+  buttonContainer: {
+    width: '80%',
   },
 });
 

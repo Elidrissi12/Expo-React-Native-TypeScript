@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 type Post = {
   userId: number;
@@ -12,12 +12,6 @@ export default function FetchData() {
   const [data, setData] = useState<Post | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [reloadKey, setReloadKey] = useState(0);
-  const [postId, setPostId] = useState<string>('1');
-
-  const triggerReload = useCallback(() => {
-    setReloadKey((prev) => prev + 1);
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -27,8 +21,7 @@ export default function FetchData() {
         setLoading(true);
         setError(null);
 
-        const id = Number(postId) || 1;
-        const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
         if (!response.ok) {
           throw new Error(`Erreur HTTP ${response.status}`);
         }
@@ -53,25 +46,10 @@ export default function FetchData() {
     return () => {
       isMounted = false;
     };
-  }, [reloadKey, postId]);
+  }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, gap: 16 }}>
-      <Text style={{ fontSize: 16, marginBottom: 4 }}>Choisis l'id du post (1 à 100)</Text>
-      <TextInput
-        value={postId}
-        onChangeText={setPostId}
-        keyboardType="number-pad"
-        style={{
-          width: '80%',
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 8,
-          paddingHorizontal: 10,
-          paddingVertical: 8,
-        }}
-        placeholder="Ex: 1"
-      />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
       {loading && (
         <>
           <ActivityIndicator size="large" />
@@ -86,12 +64,6 @@ export default function FetchData() {
           <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 8 }}>{data.title}</Text>
           <Text>{data.body}</Text>
         </>
-      )}
-
-      {!loading && (
-        <View style={{ width: '80%' }}>
-          <Button title="Recharger" onPress={triggerReload} />
-        </View>
       )}
     </View>
   );

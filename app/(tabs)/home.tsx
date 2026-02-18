@@ -1,18 +1,18 @@
 import { Image } from 'expo-image';
-import React, { useCallback, useMemo, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    Button,
-    FlatList,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Button,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import {Link} from 'expo-router';
 
 type Todo = {
   id: string;
@@ -23,23 +23,14 @@ type Todo = {
 };
 
 function createId() {
-  // Id “stable” (mieux que Math.random() seul) sans dépendance externe.
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
-function Counter() {
-  const [count, setCount] = useState(0);
 
-  return (
-    <View>
-      <Text>You clicked {count} times</Text>
-      <Button title="Click me" onPress={() => setCount(count + 1)} />
-    </View>
-  );
-}
+const STORAGE_KEY = '@todos';
 
 const Home = () => {
-  const [draft, setDraft] = useState(''); // texte en cours de saisie
-  const [todos, setTodos] = useState<Todo[]>([]); // liste de tâches
+  const [draft, setDraft] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState('');
@@ -57,7 +48,6 @@ const Home = () => {
       createdAt: Date.now(),
       important: false,
     };
-  // hello world is better  math.rando() sans dépendance externe.
 
     setTodos((prev) => [newTodo, ...prev]);
     setDraft('');
@@ -83,6 +73,32 @@ const Home = () => {
     const done = todos.filter((t) => t.done).length;
     const remaining = total - done;
     return { total, done, remaining };
+  }, [todos]);
+
+  useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed: Todo[] = JSON.parse(stored);
+          setTodos(parsed);
+        }
+      } catch {
+        // ignore load error
+      }
+    };
+    loadTodos();
+  }, []);
+
+  useEffect(() => {
+    const saveTodos = async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      } catch {
+        // ignore save error
+      }
+    };
+    saveTodos();
   }, [todos]);
 
   const visibleTodos = useMemo(() => {
@@ -129,170 +145,166 @@ const Home = () => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={styles.root}
       behavior={Platform.select({ ios: 'padding', android: undefined })}
       keyboardVerticalOffset={Platform.select({ ios: 80, android: 0 })}>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Image
-            source={require('@/assets/images/react-logo.png')}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Ma Todo List</Text>
-        </View>
-
-        <Text style={styles.subtitle}>
-          {stats.remaining} à faire · {stats.done} terminée(s) · {stats.total} total
-        </Text>
-        <Link href="/modal" style={styles.link}>
-          <Button title="Ouvrir le modal" />
-        </Link>
-
-        <View style={styles.filtersRow}>
-          <Pressable
-            style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
-            onPress={() => setFilter('all')}>
-            <Text style={filter === 'all' ? styles.filterChipTextActive : styles.filterChipText}>
-              Toutes
-            </Text>
-          </Pressable>
-          <TextInput  placeholder="Saisir le nom et le prénom" />
-          <Pressable
-            style={[styles.filterChip, filter === 'active' && styles.filterChipActive]}
-            onPress={() => setFilter('active')}>
-            <Text style={filter === 'active' ? styles.filterChipTextActive : styles.filterChipText}>
-              À faire
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.filterChip, filter === 'done' && styles.filterChipActive]}
-            onPress={() => setFilter('done')}>
-            <Text style={filter === 'done' ? styles.filterChipTextActive : styles.filterChipText}>
-              Terminées
-            </Text>
-          </Pressable>
-        </View>
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            placeholder="Ajouter une tâche"
-            value={draft}
-            onChangeText={setDraft}
-            returnKeyType="done"
-            onSubmitEditing={addTodo}
-            blurOnSubmit={false}
-          />
-          <View style={styles.addButton}>
-            <Button title="Ajouter" onPress={addTodo} disabled={!canAdd} />
+      <View style={styles.page}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Image
+              source={require('@/assets/images/react-logo.png')}
+              style={styles.logo}
+            />
+            <View>
+              <Text style={styles.title}>Ma Todo List</Text>
+              <Text style={styles.subtitle}>Dashboard des tâches</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.actionsRow}>
-          <Button title="Supprimer terminées" onPress={clearCompleted} disabled={stats.done === 0} />
-        </View>
+        {/* CONTENT */}
+        <View style={styles.content}>
+          <View style={styles.filtersRow}>
+            <Pressable
+              style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
+              onPress={() => setFilter('all')}>
+              <Text style={filter === 'all' ? styles.filterChipTextActive : styles.filterChipText}>
+                Toutes
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.filterChip, filter === 'active' && styles.filterChipActive]}
+              onPress={() => setFilter('active')}>
+              <Text
+                style={filter === 'active' ? styles.filterChipTextActive : styles.filterChipText}>
+                À faire
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.filterChip, filter === 'done' && styles.filterChipActive]}
+              onPress={() => setFilter('done')}>
+              <Text style={filter === 'done' ? styles.filterChipTextActive : styles.filterChipText}>
+                Terminées
+              </Text>
+            </Pressable>
+          </View>
 
-        <View style={styles.navRow}>
-          <Link href="/timer" asChild>
-            <Button title="Aller au Timer" onPress={() => {}} />
-          </Link>
-          <Link href="/request" asChild>
-            <Button title="Voir la requête API" onPress={() => {}} />
-          </Link>
-          <Link href="/form" asChild>
-            <Button title="Formulaire" onPress={() => {}} />
-          </Link>
-          <Link href="/searchBar" asChild>
-            <Button title="Rechercher" onPress={() => {}} />
-          </Link>
-          <Link href="/counter" asChild>
-            <Button title="Compteur" onPress={() => {}} />
-          </Link>
-        </View>
-        <FlatList
-          style={styles.list}
-          contentContainerStyle={
-            visibleTodos.length === 0 ? styles.emptyListContainer : undefined
-          }
-          keyboardShouldPersistTaps="handled"
-          data={visibleTodos}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              Aucune tâche pour l’instant. Ajoute ta première tâche au-dessus.
-            </Text>
-          }
-          renderItem={({ item }) => {
-            const isEditing = item.id === editingId;
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              placeholder="Ajouter une tâche"
+              value={draft}
+              onChangeText={setDraft}
+              returnKeyType="done"
+              onSubmitEditing={addTodo}
+              blurOnSubmit={false}
+            />
+            <View style={styles.addButton}>
+              <Button title="Ajouter" onPress={addTodo} disabled={!canAdd} />
+            </View>
+          </View>
 
-            return (
-              <View style={styles.todoRow}>
-                <Pressable
-                  onPress={() => toggleTodo(item.id)}
-                  style={[styles.checkbox, item.done ? styles.checkboxDone : styles.checkboxTodo]}
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    item.done ? 'Marquer comme non terminée' : 'Marquer comme terminée'
-                  }
-                />
+          <FlatList
+            style={styles.list}
+            contentContainerStyle={
+              visibleTodos.length === 0 ? styles.emptyListContainer : undefined
+            }
+            keyboardShouldPersistTaps="handled"
+            data={visibleTodos}
+            keyExtractor={(item) => item.id}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                Aucune tâche pour l’instant. Ajoute ta première tâche au-dessus.
+              </Text>
+            }
+            renderItem={({ item }) => {
+              const isEditing = item.id === editingId;
 
-                <Pressable
-                  onLongPress={() => toggleImportant(item.id)}
-                  style={styles.todoTextContainer}>
-                  {isEditing ? (
-                    <TextInput
-                      style={styles.editInput}
-                      value={editingDraft}
-                      onChangeText={setEditingDraft}
-                      autoFocus
-                      onSubmitEditing={saveEditing}
-                      onBlur={saveEditing}
-                    />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.todoText,
-                        item.done ? styles.todoTextDone : undefined,
-                        item.important ? styles.todoTextImportant : undefined,
-                      ]}>
-                      {item.text}
-                    </Text>
-                  )}
-                  {item.important && !isEditing && (
-                    <Text style={styles.importantBadge}>Important</Text>
-                  )}
-                </Pressable>
+              return (
+                <View style={styles.todoRow}>
+                  <Pressable
+                    onPress={() => toggleTodo(item.id)}
+                    style={[styles.checkbox, item.done ? styles.checkboxDone : styles.checkboxTodo]}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      item.done ? 'Marquer comme non terminée' : 'Marquer comme terminée'
+                    }
+                  />
 
-                <View style={styles.rowButtons}>
-                  {isEditing ? (
-                    <Button title="Annuler" onPress={cancelEditing} />
-                  ) : (
-                    <Button title="Modifier" onPress={() => startEditing(item)} />
-                  )}
-                  <View style={styles.rowButtonsSpacer} />
-                  <Button title="X" onPress={() => deleteTodo(item.id)} />
+                  <Pressable
+                    onLongPress={() => toggleImportant(item.id)}
+                    style={styles.todoTextContainer}>
+                    {isEditing ? (
+                      <TextInput
+                        style={styles.editInput}
+                        value={editingDraft}
+                        onChangeText={setEditingDraft}
+                        autoFocus
+                        onSubmitEditing={saveEditing}
+                        onBlur={saveEditing}
+                      />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.todoText,
+                          item.done ? styles.todoTextDone : undefined,
+                          item.important ? styles.todoTextImportant : undefined,
+                        ]}>
+                        {item.text}
+                      </Text>
+                    )}
+                    {item.important && !isEditing && (
+                      <Text style={styles.importantBadge}>Important</Text>
+                    )}
+                  </Pressable>
+
+                  <View style={styles.rowButtons}>
+                    {isEditing ? (
+                      <Button title="Annuler" onPress={cancelEditing} />
+                    ) : (
+                      <Button title="Modifier" onPress={() => startEditing(item)} />
+                    )}
+                    <View style={styles.rowButtonsSpacer} />
+                    <Button title="X" onPress={() => deleteTodo(item.id)} />
+                  </View>
                 </View>
-              </View>
-            );
-          }}
-        />
+              );
+            }}
+          />
+        </View>
+
+        {/* BOTTOM */}
+        <View style={styles.bottomBar}>
+          <Text style={styles.bottomStats}>
+            {stats.remaining} à faire · {stats.done} terminée(s) · {stats.total} total
+          </Text>
+          <View style={styles.bottomActions}>
+            <Button
+              title="Supprimer terminées"
+              onPress={clearCompleted}
+              disabled={stats.done === 0}
+            />
+          </View>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
+    flex: 1,
+  },
+  page: {
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginTop: 12,
-    marginBottom: 6,
+  header: {
+    marginBottom: 16,
   },
-  headerRow: {
+  headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -302,9 +314,16 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 8,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
   subtitle: {
     color: '#666',
-    marginBottom: 16,
+    fontSize: 13,
+  },
+  content: {
+    flex: 1,
   },
   inputRow: {
     flexDirection: 'row',
@@ -347,15 +366,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 13,
     fontWeight: '600',
-  },
-  actionsRow: {
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  navRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
   },
   list: {
     flex: 1,
@@ -415,9 +425,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
-  deleteButton: {
-    marginLeft: 6,
-  },
   rowButtons: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -435,13 +442,20 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
-  link: {
-    marginVertical: 12,
-    color: '#0a7ea4',
-    fontSize: 16,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
+  bottomBar: {
+    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#ddd',
+  },
+  bottomStats: {
+    fontSize: 13,
+    color: '#444',
+    marginBottom: 8,
+  },
+  bottomActions: {
+    alignItems: 'flex-start',
   },
 });
 
 export default Home;
+
