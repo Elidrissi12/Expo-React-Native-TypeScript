@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Link } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Button,
@@ -153,7 +154,7 @@ const Home = () => {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Image
-              source={require('@/assets/images/react-logo.png')}
+              source={require('@/assets/images/logo.png')}
               style={styles.logo}
             />
             <View>
@@ -260,6 +261,14 @@ const Home = () => {
                   </Pressable>
 
                   <View style={styles.rowButtons}>
+                    <View style={styles.detailsButton}>
+                      
+                      <Link
+                        href="/login"
+                        asChild>
+                        <Button title="login" onPress={() => {}} />
+                      </Link>
+                    </View>
                     {isEditing ? (
                       <Button title="Annuler" onPress={cancelEditing} />
                     ) : (
@@ -298,8 +307,10 @@ const styles = StyleSheet.create({
   },
   page: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+    backgroundColor: '#f3f4f6',
   },
   header: {
     marginBottom: 16,
@@ -428,6 +439,9 @@ const styles = StyleSheet.create({
   rowButtons: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  detailsButton: {
+    marginRight: 6,
   },
   rowButtonsSpacer: {
     width: 6,
