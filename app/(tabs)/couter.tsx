@@ -14,6 +14,7 @@ function Counter() {
       <Button title="Increment" onPress={increment} />
       <Button title="Decrement" onPress={decrement} />
     </View>
+    
   );
 }
 
