@@ -19,6 +19,12 @@ export default function ToolsTab() {
           <Button title="Formulaire" onPress={() => {}} />
         </Link>
       </View>
+
+      <View style={styles.buttonsRow}>
+        <Link href="/industrial-dashboard" asChild>
+          <Button title="Dashboard (UI maquette)" onPress={() => {}} />
+        </Link>
+      </View>
     </View>
   );
 }
