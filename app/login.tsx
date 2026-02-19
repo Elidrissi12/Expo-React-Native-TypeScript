@@ -1,7 +1,9 @@
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { setRole } from '@/services/authStorage';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 const ROLES = [
   { id: 'operator', label: 'Opérateur' },
@@ -10,6 +12,8 @@ const ROLES = [
 
 export default function LoginScreen() {
   const router = useRouter();
+  const scheme = useColorScheme();
+  const c = Colors[scheme ?? 'light'];
 
   const handleRole = async (roleId: (typeof ROLES)[number]['id']) => {
     await setRole(roleId);
@@ -17,16 +21,24 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.page}>
-      <Text style={styles.title}>Connexion</Text>
-      <Text style={styles.subtitle}>Choisis ton rôle (simulé)</Text>
+    <View style={[styles.page, { backgroundColor: c.background }]}>
+      <Text style={[styles.title, { color: c.text }]}>Connexion</Text>
+      <Text style={[styles.subtitle, { color: c.textSecondary }]}>
+        Choisis ton rôle (simulé)
+      </Text>
       <View style={styles.buttons}>
         {ROLES.map(({ id, label }) => (
           <Pressable
             key={id}
-            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: c.primaryLight },
+              pressed && { opacity: 0.88 },
+            ]}
             onPress={() => handleRole(id)}>
-            <Text style={styles.buttonText}>{label}</Text>
+            <Text style={[styles.buttonText, { color: c.textOnPrimary }]}>
+              {label}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -39,36 +51,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
+    padding: Spacing.xxl,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 24,
+    marginBottom: Spacing.xxl,
   },
   buttons: {
     width: '100%',
     maxWidth: 280,
-    gap: 12,
+    gap: Spacing.md,
   },
   button: {
-    backgroundColor: '#215229',
     paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.xxl,
+    borderRadius: Radius.md,
     alignItems: 'center',
   },
-  buttonPressed: {
-    opacity: 0.85,
-  },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },

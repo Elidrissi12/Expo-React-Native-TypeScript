@@ -1,41 +1,141 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Design system : couleurs sémantiques, espacements, rayons.
+ * Utiliser ces tokens partout pour une UX cohérente.
  */
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// ——— Palette sémantique (mode clair) ———
+const light = {
+  // Primaire : vert industriel (header, boutons principaux)
+  primary: '#1a4d2e',
+  primaryLight: '#215229',
+  primaryDark: '#0f3320',
+  textOnPrimary: '#f8faf8',
+  // Secondaire : bleu (liens, onglets, actions secondaires)
+  secondary: '#0a7ea4',
+  secondaryLight: '#0d96c4',
+  textOnSecondary: '#fff',
+  // Sémantiques
+  success: '#15803d',
+  successLight: '#16a34a',
+  warning: '#b45309',
+  danger: '#b91c1c',
+  // Surfaces
+  background: '#f8faf9',
+  surface: '#ffffff',
+  surfaceMuted: '#f1f5f4',
+  border: '#e2e8e6',
+  borderLight: '#eef2f0',
+  // Texte
+  text: '#0f172a',
+  textSecondary: '#475569',
+  textMuted: '#64748b',
+  textInverse: '#fff',
+};
+
+// ——— Mode sombre (optionnel) ———
+const dark = {
+  primary: '#2d6a4f',
+  primaryLight: '#40916c',
+  primaryDark: '#1b4332',
+  textOnPrimary: '#f8faf8',
+  secondary: '#0ea5e9',
+  secondaryLight: '#38bdf8',
+  textOnSecondary: '#fff',
+  success: '#22c55e',
+  successLight: '#4ade80',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  background: '#0f1419',
+  surface: '#1a2228',
+  surfaceMuted: '#24302a',
+  border: '#2d3d36',
+  borderLight: '#1e2d26',
+  text: '#f1f5f9',
+  textSecondary: '#cbd5e1',
+  textMuted: '#94a3b8',
+  textInverse: '#0f172a',
+};
+
+// ——— Exports pour composants ———
+export const Palette = { light, dark };
+
+const tintColorLight = light.secondary;
+const tintColorDark = dark.secondary;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    ...light,
+    text: light.text,
+    background: light.background,
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: light.textSecondary,
+    tabIconDefault: light.textMuted,
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    ...dark,
+    text: dark.text,
+    background: dark.background,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: dark.textSecondary,
+    tabIconDefault: dark.textMuted,
     tabIconSelected: tintColorDark,
   },
 };
 
+// ——— Espacements (scale 4px) ———
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
+} as const;
+
+// ——— Rayons de bordure ———
+export const Radius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  full: 9999,
+} as const;
+
+// ——— Ombres légères (iOS / Android) ———
+export const Shadows = Platform.select({
+  ios: {
+    card: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+    },
+    cardPressed: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.04,
+      shadowRadius: 2,
+    },
+  },
+  default: {
+    card: {
+      elevation: 2,
+    },
+    cardPressed: {
+      elevation: 1,
+    },
+  },
+});
+
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {

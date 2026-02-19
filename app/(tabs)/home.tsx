@@ -1,3 +1,4 @@
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Image } from 'expo-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link } from 'expo-router';
@@ -14,6 +15,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 type Todo = {
   id: string;
@@ -30,6 +32,8 @@ function createId() {
 const STORAGE_KEY = '@todos';
 
 const Home = () => {
+  const scheme = useColorScheme();
+  const c = Colors[scheme ?? 'light'];
   const [draft, setDraft] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
@@ -149,7 +153,7 @@ const Home = () => {
       style={styles.root}
       behavior={Platform.select({ ios: 'padding', android: undefined })}
       keyboardVerticalOffset={Platform.select({ ios: 80, android: 0 })}>
-      <View style={styles.page}>
+      <View style={[styles.page, { backgroundColor: c.background }]}>
         {/* HEADER */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -158,8 +162,8 @@ const Home = () => {
               style={styles.logo}
             />
             <View>
-              <Text style={styles.title}>Ma Todo List</Text>
-              <Text style={styles.subtitle}>Dashboard des tâches</Text>
+              <Text style={[styles.title, { color: c.text }]}>Ma Todo List</Text>
+              <Text style={[styles.subtitle, { color: c.textSecondary }]}>Dashboard des tâches</Text>
             </View>
           </View>
         </View>
@@ -168,24 +172,50 @@ const Home = () => {
         <View style={styles.content}>
           <View style={styles.filtersRow}>
             <Pressable
-              style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
+              style={[
+                styles.filterChip,
+                { borderColor: c.border },
+                filter === 'all' && { backgroundColor: c.secondary, borderColor: c.secondary },
+              ]}
               onPress={() => setFilter('all')}>
-              <Text style={filter === 'all' ? styles.filterChipTextActive : styles.filterChipText}>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  { color: c.text },
+                  filter === 'all' && styles.filterChipTextActive,
+                ]}>
                 Toutes
               </Text>
             </Pressable>
             <Pressable
-              style={[styles.filterChip, filter === 'active' && styles.filterChipActive]}
+              style={[
+                styles.filterChip,
+                { borderColor: c.border },
+                filter === 'active' && { backgroundColor: c.secondary, borderColor: c.secondary },
+              ]}
               onPress={() => setFilter('active')}>
               <Text
-                style={filter === 'active' ? styles.filterChipTextActive : styles.filterChipText}>
+                style={[
+                  styles.filterChipText,
+                  { color: c.text },
+                  filter === 'active' && styles.filterChipTextActive,
+                ]}>
                 À faire
               </Text>
             </Pressable>
             <Pressable
-              style={[styles.filterChip, filter === 'done' && styles.filterChipActive]}
+              style={[
+                styles.filterChip,
+                { borderColor: c.border },
+                filter === 'done' && { backgroundColor: c.secondary, borderColor: c.secondary },
+              ]}
               onPress={() => setFilter('done')}>
-              <Text style={filter === 'done' ? styles.filterChipTextActive : styles.filterChipText}>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  { color: c.text },
+                  filter === 'done' && styles.filterChipTextActive,
+                ]}>
                 Terminées
               </Text>
             </Pressable>
@@ -193,8 +223,12 @@ const Home = () => {
 
           <View style={styles.inputRow}>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                { borderColor: c.border, color: c.text },
+              ]}
               placeholder="Ajouter une tâche"
+              placeholderTextColor={c.textMuted}
               value={draft}
               onChangeText={setDraft}
               returnKeyType="done"
@@ -215,7 +249,7 @@ const Home = () => {
             data={visibleTodos}
             keyExtractor={(item) => item.id}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, { color: c.textMuted }]}>
                 Aucune tâche pour l’instant. Ajoute ta première tâche au-dessus.
               </Text>
             }
@@ -223,10 +257,19 @@ const Home = () => {
               const isEditing = item.id === editingId;
 
               return (
-                <View style={styles.todoRow}>
+                <View
+                  style={[
+                    styles.todoRow,
+                    { backgroundColor: c.surfaceMuted, borderColor: c.borderLight },
+                  ]}>
                   <Pressable
                     onPress={() => toggleTodo(item.id)}
-                    style={[styles.checkbox, item.done ? styles.checkboxDone : styles.checkboxTodo]}
+                    style={[
+                      styles.checkbox,
+                      item.done
+                        ? { borderColor: c.success, backgroundColor: c.success }
+                        : { borderColor: c.secondary, backgroundColor: 'transparent' },
+                    ]}
                     accessibilityRole="button"
                     accessibilityLabel={
                       item.done ? 'Marquer comme non terminée' : 'Marquer comme terminée'
@@ -238,7 +281,7 @@ const Home = () => {
                     style={styles.todoTextContainer}>
                     {isEditing ? (
                       <TextInput
-                        style={styles.editInput}
+                        style={[styles.editInput, { borderColor: c.border, backgroundColor: c.surface, color: c.text }]}
                         value={editingDraft}
                         onChangeText={setEditingDraft}
                         autoFocus
@@ -249,14 +292,16 @@ const Home = () => {
                       <Text
                         style={[
                           styles.todoText,
-                          item.done ? styles.todoTextDone : undefined,
-                          item.important ? styles.todoTextImportant : undefined,
+                          { color: c.text },
+                          item.done && styles.todoTextDone,
+                          item.done && { color: c.textMuted },
+                          item.important && styles.todoTextImportant,
                         ]}>
                         {item.text}
                       </Text>
                     )}
                     {item.important && !isEditing && (
-                      <Text style={styles.importantBadge}>Important</Text>
+                      <Text style={[styles.importantBadge, { color: c.danger }]}>Important</Text>
                     )}
                   </Pressable>
 
@@ -284,8 +329,8 @@ const Home = () => {
         </View>
 
         {/* BOTTOM */}
-        <View style={styles.bottomBar}>
-          <Text style={styles.bottomStats}>
+        <View style={[styles.bottomBar, { borderTopColor: c.border }]}>
+          <Text style={[styles.bottomStats, { color: c.textSecondary }]}>
             {stats.remaining} à faire · {stats.done} terminée(s) · {stats.total} total
           </Text>
           <View style={styles.bottomActions}>
@@ -307,10 +352,9 @@ const styles = StyleSheet.create({
   },
   page: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: '#f3f4f6',
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.sm,
   },
   header: {
     marginBottom: 16,
@@ -330,7 +374,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   subtitle: {
-    color: '#666',
     fontSize: 13,
   },
   content: {
@@ -344,11 +387,10 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderColor: '#ccc',
     borderWidth: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.md,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: Radius.sm,
   },
   addButton: {
     minWidth: 110,
@@ -361,16 +403,10 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  filterChipActive: {
-    backgroundColor: '#0a7ea4',
-    borderColor: '#0a7ea4',
   },
   filterChipText: {
-    color: '#333',
     fontSize: 13,
   },
   filterChipTextActive: {
@@ -385,12 +421,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderColor: '#eee',
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.md,
     borderWidth: 1,
     marginBottom: 10,
-    backgroundColor: '#fafafa',
     gap: 10,
   },
   todoTextContainer: {
@@ -402,20 +436,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 2,
   },
-  checkboxTodo: {
-    borderColor: '#0a7ea4',
-    backgroundColor: 'transparent',
-  },
-  checkboxDone: {
-    borderColor: '#2e7d32',
-    backgroundColor: '#2e7d32',
-  },
   todoText: {
     flex: 1,
     fontSize: 16,
   },
   todoTextDone: {
-    color: '#777',
     textDecorationLine: 'line-through',
   },
   todoTextImportant: {
@@ -425,16 +450,13 @@ const styles = StyleSheet.create({
     marginTop: 2,
     alignSelf: 'flex-start',
     fontSize: 11,
-    color: '#d32f2f',
   },
   editInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   rowButtons: {
     flexDirection: 'row',
@@ -453,18 +475,15 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   emptyText: {
-    color: '#666',
     textAlign: 'center',
   },
   bottomBar: {
-    paddingTop: 8,
+    paddingTop: Spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#ddd',
   },
   bottomStats: {
     fontSize: 13,
-    color: '#444',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   bottomActions: {
     alignItems: 'flex-start',

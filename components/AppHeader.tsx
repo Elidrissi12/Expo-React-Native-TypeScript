@@ -1,8 +1,10 @@
 // components/AppHeader.tsx
+import { Colors } from '@/constants/theme';
 import { clearSession } from '@/services/authStorage';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 type AppHeaderProps = {
   title?: string;
@@ -16,6 +18,8 @@ export function AppHeader({
   showLogout = true,
 }: AppHeaderProps) {
   const router = useRouter();
+  const scheme = useColorScheme();
+  const c = Colors[scheme ?? 'light'];
 
   const handleBack = () => {
     router.back();
@@ -27,10 +31,10 @@ export function AppHeader({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: c.primaryLight }]}>
       {showBack ? (
         <Pressable style={styles.left} onPress={handleBack}>
-          <Text style={styles.icon}>{'‹'}</Text>
+          <Text style={[styles.icon, { color: c.textOnPrimary }]}>{'‹'}</Text>
         </Pressable>
       ) : (
         <View style={styles.left} />
@@ -41,12 +45,12 @@ export function AppHeader({
           source={require('@/assets/images/favicon.png')}
           style={styles.logo}
         />
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: c.textOnPrimary }]}>{title}</Text>
       </View>
 
       {showLogout ? (
         <Pressable style={styles.right} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Quitter</Text>
+          <Text style={[styles.logoutText, { color: c.warning }]}>Quitter</Text>
         </Pressable>
       ) : (
         <View style={styles.right} />
@@ -58,7 +62,6 @@ export function AppHeader({
 const styles = StyleSheet.create({
   container: {
     height: 56,
-    backgroundColor: '#215229',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -81,7 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   icon: {
-    color: '#fcfdff',
     fontSize: 24,
   },
   logo: {
@@ -90,12 +92,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   title: {
-    color: '#f9fafb',
     fontSize: 16,
     fontWeight: '600',
   },
   logoutText: {
-    color: '#f97316',
     fontSize: 13,
     fontWeight: '600',
   },

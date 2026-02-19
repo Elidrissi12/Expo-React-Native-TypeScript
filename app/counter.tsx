@@ -13,7 +13,11 @@ function Counter() {
       <Text style={{ fontSize: 24 }}>Count: {count}</Text>
       <Button title="Increment" onPress={increment} />
       <Button title="Decrement" onPress={decrement} />
+      
+      <Text>Bienvenue Zaki 🚀</Text>
+    
     </View>
+    
   );
 }
 
