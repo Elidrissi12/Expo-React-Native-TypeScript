@@ -1,4 +1,3 @@
-// features/restaurant/components/CartItemRow.tsx
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CartItem, Meal } from '../types';
@@ -38,6 +37,7 @@ export const CartItemRow = React.memo(function CartItemRow({
         <Pressable onPress={onRemove} style={styles.removeButton}>
           <Text style={styles.removeText}>X</Text>
         </Pressable>
+        <Text style={styles.label}>new</Text>
       </View>
     </View>
   );
@@ -53,12 +53,18 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
   },
+  label:{
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
+    marginBlockEnd: 0,
+  },
   name: {
     fontWeight: '600',
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#776a6a',
   },
   actions: {
     flexDirection: 'row',
@@ -80,7 +86,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   removeText: {
-    color: '#b91c1c',
+    color: '#bc1e1e',
     fontWeight: '700',
   },
 });

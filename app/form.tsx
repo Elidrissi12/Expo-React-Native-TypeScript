@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
+import {useNavigation} from '@react-navigation/native';
+import Link from 'expo-router/link';
 
 function FormValidation() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     if (name.trim() === '') {
@@ -18,9 +23,9 @@ function FormValidation() {
 
   const handleSubmit = () => {
     if (error === '') {
-      alert('Form submitted!');
+      alert('formulaire soumis avec succès');
     } else {
-      alert('Please fix the errors before submitting.');
+      alert('erreur dans le formulaire: ' + error);
     }
   };
 
@@ -28,21 +33,23 @@ function FormValidation() {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Enter your name"
+        placeholder="saisir le nom d'utilisateur"
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Enter your password"
+        placeholder="saisir le mot de passe"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.buttonContainer}>
-        <Button title="Submit" onPress={handleSubmit} />
+        <Link href="/new3"><Button title="valider" onPress={handleSubmit} /></Link>
+        
       </View>
+      
     </View>
   );
 }

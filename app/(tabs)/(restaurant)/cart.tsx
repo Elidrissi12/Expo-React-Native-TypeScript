@@ -1,4 +1,3 @@
-// app/(tabs)/(restaurant)/cart.tsx
 import { AppHeader } from '@/components/AppHeader';
 import { CartItemRow } from '@/app/features/restaurant/components/CartItemRow';
 import { useRestaurant } from '@/app/features/restaurant/hooks/useRestaurant';

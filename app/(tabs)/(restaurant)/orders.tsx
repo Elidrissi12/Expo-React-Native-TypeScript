@@ -1,4 +1,3 @@
-// app/(tabs)/(restaurant)/orders.tsx
 import { AppHeader } from '@/components/AppHeader';
 import { OrderCard } from '@/app/features/restaurant/components/OrderCard';
 import { useRestaurant } from '@/app/features/restaurant/hooks/useRestaurant';

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Meal } from '../types';
+import { Link } from 'expo-router';
 
 type Props = {
   meal: Meal;
@@ -28,7 +29,7 @@ export const MealCard = React.memo(function MealCard({ meal, onAddToCart }: Prop
         <View style={styles.footer}>
           <Text style={styles.price}>{meal.price.toFixed(2)} €</Text>
           <Pressable style={styles.button} onPress={onAddToCart}>
-            <Text style={styles.buttonText}>Add Cart</Text>
+            <Link href="/features/restaurant/page2"><Text style={styles.buttonText}>Add Cart</Text></Link>
           </Pressable>
         </View>
       </View>

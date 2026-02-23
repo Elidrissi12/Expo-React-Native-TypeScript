@@ -1,4 +1,3 @@
-// app/(tabs)/(restaurant)/index.tsx
 import { useRestaurant } from '@/app/features/restaurant/hooks/useRestaurant';
 import { MOCK_RESTAURANT_NAME } from '@/app/features/restaurant/mock/restaurantMock';
 import { MealCard } from '@/app/features/restaurant/components/MealCard';
@@ -41,10 +40,12 @@ export default function RestaurantDashboardScreen() {
           </View>
           <View style={styles.headerTitleBlock}>
             <Text style={styles.headerTitle}>{MOCK_RESTAURANT_NAME}</Text>
-            <Text style={styles.headerSubtitle}>Ice Cream Gelato</Text>
+            <Text style={styles.headerSubtitle}>abdo el idrissi</Text>
           </View>
           <View style={styles.menuIconBox}>
-            <Text style={styles.menuIcon}>☰</Text>
+            <Link href="../menu" asChild>
+              <Text style={styles.menuIcon}>☰</Text>
+            </Link>
           </View>
         </View>
 
